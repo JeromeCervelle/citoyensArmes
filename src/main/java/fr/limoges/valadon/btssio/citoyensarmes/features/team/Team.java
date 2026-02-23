@@ -15,8 +15,12 @@ public class Team {
     @Id
     private String id;
     private String name;
+    
+    // Les points seront recalculés dynamiquement dans le service
     private int points;
-    private byte[] image; // blob in schema
+    
+    // URL vers un stockage externe
+    private String imageUrl;
     
     // Une équipe peut jouer dans plusieurs tournois
     private List<String> tournamentIds;
