@@ -17,6 +17,7 @@ public class Tournament {
     private String name;
     private String game;
     private TournamentStatus status;
+    private int numberOfTeams;
     
     // Un tournoi est organisé par un utilisateur
     private String organizerId;

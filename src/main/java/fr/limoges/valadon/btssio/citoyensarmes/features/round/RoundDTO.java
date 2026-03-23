@@ -14,5 +14,6 @@ import java.util.List;
 public class RoundDTO {
     private String id;
     private String name;
+    private int format;
     private List<String> matchIds;
 }

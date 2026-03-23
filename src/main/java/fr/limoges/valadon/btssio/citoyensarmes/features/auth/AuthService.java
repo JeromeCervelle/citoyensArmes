@@ -1,6 +1,7 @@
 package fr.limoges.valadon.btssio.citoyensarmes.features.auth;
 
 import fr.limoges.valadon.btssio.citoyensarmes.features.user.User;
+import fr.limoges.valadon.btssio.citoyensarmes.features.user.UserRole;
 import fr.limoges.valadon.btssio.citoyensarmes.features.user.UserRepository;
 import fr.limoges.valadon.btssio.citoyensarmes.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
-        user.setRoles(List.of("USER"));
+        user.setRole(UserRole.ADMIN);
         user.setTournamentIds(new ArrayList<>());
         
         userRepository.save(user);

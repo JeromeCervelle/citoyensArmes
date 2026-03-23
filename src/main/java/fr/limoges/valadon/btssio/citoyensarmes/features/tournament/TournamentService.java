@@ -34,6 +34,7 @@ public class TournamentService {
         tournament.setName(request.getName());
         tournament.setGame(request.getGame());
         tournament.setStatus(TournamentStatus.DRAFT);
+        tournament.setNumberOfTeams(request.getNumberOfTeams());
         tournament.setOrganizerId(organizerId);
 
         return mapToDTO(tournamentRepository.save(tournament));
@@ -58,6 +59,18 @@ public class TournamentService {
         if (request.getStatus() != null) {
             tournament.setStatus(request.getStatus());
         }
+        if (request.getNumberOfTeams() > 0) {
+            tournament.setNumberOfTeams(request.getNumberOfTeams());
+        }
+
+        return mapToDTO(tournamentRepository.save(tournament));
+    }
+
+    public TournamentDTO updateTournamentStatus(String id, UpdateTournamentStatusRequest request) {
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tournoi non trouvé avec l'id : " + id));
+
+        tournament.setStatus(request.getStatus());
 
         return mapToDTO(tournamentRepository.save(tournament));
     }
@@ -91,6 +104,7 @@ public class TournamentService {
                 .name(tournament.getName())
                 .game(tournament.getGame())
                 .status(tournament.getStatus())
+                .numberOfTeams(tournament.getNumberOfTeams())
                 .build();
     }
 }

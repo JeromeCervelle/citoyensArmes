@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/tournaments")
+@RequestMapping(value = "/api/tournaments", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "Tournament", description = "Gestion des tournois")
 public class TournamentController {
@@ -47,6 +47,15 @@ public class TournamentController {
             @RequestBody UpdateTournamentRequest request
     ) {
         return ResponseEntity.ok(tournamentService.updateTournament(id, request));
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Mettre à jour le statut d'un tournoi", description = "Permet de changer manuellement le statut d'un tournoi.")
+    public ResponseEntity<TournamentDTO> updateTournamentStatus(
+            @PathVariable String id,
+            @RequestBody UpdateTournamentStatusRequest request
+    ) {
+        return ResponseEntity.ok(tournamentService.updateTournamentStatus(id, request));
     }
 
     @DeleteMapping("/{id}")

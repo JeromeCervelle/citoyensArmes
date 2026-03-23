@@ -21,8 +21,14 @@ public class MatchService {
         List<String> roundIds = roundRepository.findByTournamentId(tournamentId).stream()
                 .map(Round::getId)
                 .collect(Collectors.toList());
-        
+
         return matchRepository.findByRoundIdIn(roundIds).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<MatchDTO> listMatchesForTeam(String teamId) {
+        return matchRepository.findByTeam1IdOrTeam2Id(teamId, teamId).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -30,18 +36,18 @@ public class MatchService {
     public MatchDTO getMatch(String tournamentId, String matchId) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RuntimeException("Match non trouvé avec l'id : " + matchId));
-        
+
         validateMatchBelongsToTournament(match, tournamentId);
-        
+
         return mapToDTO(match);
     }
 
     public void updateMatchPoints(String tournamentId, String matchId, UpdateMatchPointsRequest request) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RuntimeException("Match non trouvé avec l'id : " + matchId));
-        
+
         validateMatchBelongsToTournament(match, tournamentId);
-        
+
         if (match.getTeam1Id().equals(request.getTeamId())) {
             match.setTeam1Point(request.getScore());
         } else if (match.getTeam2Id().equals(request.getTeamId())) {
@@ -49,7 +55,7 @@ public class MatchService {
         } else {
             throw new RuntimeException("L'équipe spécifiée ne participe pas à ce match.");
         }
-        
+
         matchRepository.save(match);
     }
 
@@ -75,10 +81,20 @@ public class MatchService {
         matchRepository.save(match);
     }
 
+    public void updateMatchStatus(String tournamentId, String matchId, UpdateMatchStatusRequest request) {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match non trouvé avec l'id : " + matchId));
+
+        validateMatchBelongsToTournament(match, tournamentId);
+
+        match.setStatus(request.getStatus());
+        matchRepository.save(match);
+    }
+
     private void validateMatchBelongsToTournament(Match match, String tournamentId) {
         Round round = roundRepository.findById(match.getRoundId())
                 .orElseThrow(() -> new RuntimeException("Manche parente du match non trouvée."));
-        
+
         if (!round.getTournamentId().equals(tournamentId)) {
             throw new RuntimeException("Ce match n'appartient pas au tournoi spécifié.");
         }
@@ -91,6 +107,7 @@ public class MatchService {
                 .team2Id(match.getTeam2Id())
                 .team1Point(match.getTeam1Point())
                 .team2Point(match.getTeam2Point())
+                .status(match.getStatus())
                 .build();
     }
 }

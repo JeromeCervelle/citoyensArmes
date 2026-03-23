@@ -27,8 +27,7 @@ public class MatchController {
     @Operation(summary = "Récupérer un match", description = "Affiche les détails précis d'un match spécifique.")
     public ResponseEntity<MatchDTO> getMatch(
             @PathVariable String tournamentId,
-            @PathVariable String matchId
-    ) {
+            @PathVariable String matchId) {
         return ResponseEntity.ok(matchService.getMatch(tournamentId, matchId));
     }
 
@@ -37,8 +36,7 @@ public class MatchController {
     public ResponseEntity<Map<String, String>> updateMatchPoints(
             @PathVariable String tournamentId,
             @PathVariable String matchId,
-            @RequestBody UpdateMatchPointsRequest request
-    ) {
+            @RequestBody UpdateMatchPointsRequest request) {
         matchService.updateMatchPoints(tournamentId, matchId, request);
         return ResponseEntity.ok(Map.of("message", "Le score a été mis à jour avec succès."));
     }
@@ -48,9 +46,24 @@ public class MatchController {
     public ResponseEntity<Map<String, String>> registerTeamsToMatch(
             @PathVariable String tournamentId,
             @PathVariable String matchId,
-            @RequestBody RegisterTeamsToMatchRequest request
-    ) {
+            @RequestBody RegisterTeamsToMatchRequest request) {
         matchService.registerTeamsToMatch(tournamentId, matchId, request);
         return ResponseEntity.ok(Map.of("message", "Les équipes ont été inscrites au match avec succès."));
+    }
+
+    @PatchMapping("/{matchId}/status")
+    @Operation(summary = "Mettre à jour le statut d'un match", description = "Permet de changer manuellement le statut d'un match (PENDING, IN_PROGRESS, etc.).")
+    public ResponseEntity<Map<String, String>> updateMatchStatus(
+            @PathVariable String tournamentId,
+            @PathVariable String matchId,
+            @RequestBody UpdateMatchStatusRequest request) {
+        matchService.updateMatchStatus(tournamentId, matchId, request);
+        return ResponseEntity.ok(Map.of("message", "Le statut du match a été mis à jour avec succès."));
+    }
+
+    @GetMapping("/team/{teamId}")
+    @Operation(summary = "Lister les matchs d'une équipe", description = "Récupère tous les matchs auxquels participe une équipe spécifique.")
+    public ResponseEntity<List<MatchDTO>> listMatchesForTeam(@PathVariable String teamId) {
+        return ResponseEntity.ok(matchService.listMatchesForTeam(teamId));
     }
 }

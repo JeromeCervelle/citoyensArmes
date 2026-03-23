@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -14,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @Operation(summary = "Obtenir tous les utilisateurs", description = "Récupère la liste de tous les comptes utilisateurs")
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 
     @Operation(summary = "Obtenir l'utilisateur courant", description = "Récupère les informations de l'utilisateur actuellement authentifié")
     @GetMapping("/me")
@@ -52,5 +59,13 @@ public class UserController {
         }
         userService.updatePassword(id, request);
         return ResponseEntity.ok("Mise à jour effectuée avec succès");
+    }
+
+    @PutMapping("/{id}/status")
+    @Operation(summary = "Mettre à jour le statut d'un utilisateur")
+    public ResponseEntity<UserDTO> updateUserStatus(
+            @PathVariable String id,
+            @RequestBody UpdateUserStatusRequest request) {
+        return ResponseEntity.ok(userService.updateUserStatus(id, request));
     }
 }

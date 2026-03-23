@@ -30,6 +30,7 @@ public class RoundService {
 
         Round round = new Round();
         round.setName(request.getName());
+        round.setFormat(request.getFormat());
         round.setTournamentId(tournamentId);
         round.setMatchIds(new ArrayList<>());
 
@@ -85,6 +86,7 @@ public class RoundService {
         return RoundDTO.builder()
                 .id(round.getId())
                 .name(round.getName())
+                .format(round.getFormat())
                 .matchIds(round.getMatchIds())
                 .build();
     }

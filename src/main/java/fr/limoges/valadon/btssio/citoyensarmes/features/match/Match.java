@@ -20,4 +20,5 @@ public class Match {
     private String team2Id;
     private int team1Point;
     private int team2Point;
+    private MatchStatus status;
 }

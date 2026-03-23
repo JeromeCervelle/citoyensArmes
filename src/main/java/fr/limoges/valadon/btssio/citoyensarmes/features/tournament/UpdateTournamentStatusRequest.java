@@ -3,9 +3,6 @@ package fr.limoges.valadon.btssio.citoyensarmes.features.tournament;
 import lombok.Data;
 
 @Data
-public class UpdateTournamentRequest {
-    private String name;
-    private String game;
+public class UpdateTournamentStatusRequest {
     private TournamentStatus status;
-    private int numberOfTeams;
 }

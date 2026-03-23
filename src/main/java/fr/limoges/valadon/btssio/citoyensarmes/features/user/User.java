@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Représente un utilisateur organisateur de tournois.
@@ -31,8 +30,9 @@ public class User implements UserDetails {
     private String password;
     private String name;
 
-    private List<String> roles;
-
+    private UserStatus status;
+    private UserRole role;
+    
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -44,12 +44,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (roles == null) {
+        if (role == null) {
             return Collections.emptyList();
         }
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

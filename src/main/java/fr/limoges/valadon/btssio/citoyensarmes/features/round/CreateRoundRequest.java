@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class CreateRoundRequest {
     private String name;
+    private int format;
 }

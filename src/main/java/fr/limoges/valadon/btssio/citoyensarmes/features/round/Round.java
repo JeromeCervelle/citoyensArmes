@@ -17,7 +17,7 @@ public class Round {
     private String name;
     
     private String tournamentId;
-    
+    private int format;
     // Une manche inclut un ou plusieurs matchs
     private List<String> matchIds;
 }

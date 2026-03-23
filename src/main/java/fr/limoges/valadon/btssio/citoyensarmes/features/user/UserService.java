@@ -1,6 +1,8 @@
 package fr.limoges.valadon.btssio.citoyensarmes.features.user;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
     public UserDTO getUserById(String id) {
         User user = userRepository.findById(id)
@@ -26,6 +34,9 @@ public class UserService {
         }
         if (request.getName() != null) {
             user.setName(request.getName());
+        }
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
         }
         
         User savedUser = userRepository.save(user);
@@ -44,12 +55,24 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public UserDTO updateUserStatus(String id, UpdateUserStatusRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        if (request.getStatus() != null) {
+            user.setStatus(request.getStatus());
+        }
+
+        User savedUser = userRepository.save(user);
+        return mapToDTO(savedUser);
+    }
+
     public UserDTO mapToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
-        dto.setRoles(user.getRoles());
+        dto.setRole(user.getRole());
         dto.setCreatedAt(user.getCreatedAt());
         dto.setUpdatedAt(user.getUpdatedAt());
         return dto;
