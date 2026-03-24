@@ -6,6 +6,7 @@ import fr.limoges.valadon.btssio.citoyensarmes.features.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,6 @@ public class MatchService {
 
         match.setTeam1Id(request.getTeam1Id());
         match.setTeam2Id(request.getTeam2Id());
-        // Reset points when teams are changed? Usually yes.
         match.setTeam1Point(0);
         match.setTeam2Point(0);
 
@@ -89,6 +89,47 @@ public class MatchService {
 
         match.setStatus(request.getStatus());
         matchRepository.save(match);
+    }
+
+    /**
+     * Crée plusieurs matchs vides en une seule opération dans un round donné.
+     * Remplace les appels individuels répétés pour accélérer la génération de tournoi.
+     *
+     * @param tournamentId ID du tournoi (pour validation)
+     * @param request      contient le roundId et le count
+     * @return liste des MatchDTO créés (avec leurs IDs)
+     */
+    public List<MatchDTO> bulkCreateMatches(String tournamentId, BulkCreateMatchRequest request) {
+        Round round = roundRepository.findById(request.getRoundId())
+                .orElseThrow(() -> new RuntimeException("Round non trouvé : " + request.getRoundId()));
+
+        if (!round.getTournamentId().equals(tournamentId)) {
+            throw new RuntimeException("Ce round n'appartient pas au tournoi spécifié.");
+        }
+
+        List<Match> matches = new ArrayList<>();
+        for (int i = 0; i < request.getCount(); i++) {
+            Match match = new Match();
+            match.setRoundId(request.getRoundId());
+            match.setTeam1Id("");
+            match.setTeam2Id("");
+            match.setTeam1Point(0);
+            match.setTeam2Point(0);
+            match.setStatus(MatchStatus.PENDING);
+            matches.add(match);
+        }
+
+        // saveAll = un seul appel MongoDB au lieu de N appels
+        List<Match> saved = matchRepository.saveAll(matches);
+
+        // CRITIQUE : Mettre à jour la liste matchIds du Round (comme createMatchInRound le fait)
+        if (round.getMatchIds() == null) {
+            round.setMatchIds(new ArrayList<>());
+        }
+        saved.forEach(m -> round.getMatchIds().add(m.getId()));
+        roundRepository.save(round);
+
+        return saved.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
     private void validateMatchBelongsToTournament(Match match, String tournamentId) {

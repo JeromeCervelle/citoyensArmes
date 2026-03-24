@@ -28,7 +28,7 @@ public class UserService {
     public UserDTO updateUser(String id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        
+
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
@@ -38,7 +38,7 @@ public class UserService {
         if (request.getRole() != null) {
             user.setRole(request.getRole());
         }
-        
+
         User savedUser = userRepository.save(user);
         return mapToDTO(savedUser);
     }
@@ -46,11 +46,12 @@ public class UserService {
     public void updatePassword(String id, UpdatePasswordRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        
-        if (request.getNewPassword() == null || request.getNewPassword().length() < 8 || request.getNewPassword().length() > 48) {
+
+        if (request.getNewPassword() == null || request.getNewPassword().length() < 8
+                || request.getNewPassword().length() > 48) {
             throw new RuntimeException("Le mot de passe doit contenir entre 8 et 48 caractères");
         }
-        
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }

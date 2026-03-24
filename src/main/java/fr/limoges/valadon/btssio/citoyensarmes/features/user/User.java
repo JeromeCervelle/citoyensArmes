@@ -32,13 +32,13 @@ public class User implements UserDetails {
 
     private UserStatus status;
     private UserRole role;
-    
+
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-    
+
     // Un utilisateur organise un ou plusieurs tournois
     private List<String> tournamentIds;
 

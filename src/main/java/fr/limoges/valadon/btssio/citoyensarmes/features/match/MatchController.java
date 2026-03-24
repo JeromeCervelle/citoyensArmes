@@ -66,4 +66,12 @@ public class MatchController {
     public ResponseEntity<List<MatchDTO>> listMatchesForTeam(@PathVariable String teamId) {
         return ResponseEntity.ok(matchService.listMatchesForTeam(teamId));
     }
+
+    @PostMapping("/bulk")
+    @Operation(summary = "Créer plusieurs matchs en une fois", description = "Crée un nombre N de matchs vides dans un round donné en un seul appel. Optimisé pour la génération rapide de tournois.")
+    public ResponseEntity<List<MatchDTO>> bulkCreateMatches(
+            @PathVariable String tournamentId,
+            @RequestBody BulkCreateMatchRequest request) {
+        return ResponseEntity.ok(matchService.bulkCreateMatches(tournamentId, request));
+    }
 }
