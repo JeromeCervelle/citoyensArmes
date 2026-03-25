@@ -29,6 +29,10 @@ public class AuthService {
         user.setRole(UserRole.ADMIN);
         user.setTournamentIds(new ArrayList<>());
         
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Un compte existe déjà avec cet e-mail");
+        }
+        
         userRepository.save(user);
         
         var jwtToken = jwtService.generateToken(user);

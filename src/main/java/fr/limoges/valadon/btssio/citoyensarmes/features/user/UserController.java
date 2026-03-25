@@ -39,9 +39,8 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable String id,
             @RequestBody UpdateUserRequest request,
-            @AuthenticationPrincipal User currentUser
-    ) {
-        if (!id.equals(currentUser.getId())) {
+            @AuthenticationPrincipal User currentUser) {
+        if (!id.equals(currentUser.getId()) && currentUser.getRole() != UserRole.SUPERADMIN) {
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(userService.updateUser(id, request));
@@ -52,9 +51,8 @@ public class UserController {
     public ResponseEntity<String> updatePassword(
             @PathVariable String id,
             @RequestBody UpdatePasswordRequest request,
-            @AuthenticationPrincipal User currentUser
-    ) {
-        if (!id.equals(currentUser.getId())) {
+            @AuthenticationPrincipal User currentUser) {
+        if (!id.equals(currentUser.getId()) && currentUser.getRole() != UserRole.SUPERADMIN) {
             return ResponseEntity.status(403).build();
         }
         userService.updatePassword(id, request);
@@ -67,5 +65,15 @@ public class UserController {
             @PathVariable String id,
             @RequestBody UpdateUserStatusRequest request) {
         return ResponseEntity.ok(userService.updateUserStatus(id, request));
+    }
+
+    @Operation(summary = "Supprimer un utilisateur", description = "Supprime définitivement un compte utilisateur")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser.getRole() != UserRole.SUPERADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
