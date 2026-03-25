@@ -93,7 +93,8 @@ public class MatchService {
 
     /**
      * Crée plusieurs matchs vides en une seule opération dans un round donné.
-     * Remplace les appels individuels répétés pour accélérer la génération de tournoi.
+     * Remplace les appels individuels répétés pour accélérer la génération de
+     * tournoi.
      *
      * @param tournamentId ID du tournoi (pour validation)
      * @param request      contient le roundId et le count
@@ -122,7 +123,8 @@ public class MatchService {
         // saveAll = un seul appel MongoDB au lieu de N appels
         List<Match> saved = matchRepository.saveAll(matches);
 
-        // CRITIQUE : Mettre à jour la liste matchIds du Round (comme createMatchInRound le fait)
+        // CRITIQUE : Mettre à jour la liste matchIds du Round (comme createMatchInRound
+        // le fait)
         if (round.getMatchIds() == null) {
             round.setMatchIds(new ArrayList<>());
         }

@@ -10,6 +10,7 @@ public class UserDTO {
     private String email;
     private String name;
     private UserRole role;
+    private UserStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

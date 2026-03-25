@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String password;
     private String name;
 
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
     private UserRole role;
 
     @CreatedDate
@@ -72,6 +72,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return status == null || status == UserStatus.ACTIVE;
     }
 }

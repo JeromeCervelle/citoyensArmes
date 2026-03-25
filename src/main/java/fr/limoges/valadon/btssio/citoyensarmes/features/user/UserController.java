@@ -18,8 +18,8 @@ public class UserController {
 
     @Operation(summary = "Obtenir tous les utilisateurs", description = "Récupère la liste de tous les comptes utilisateurs")
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<UserDTO>> getAllUsers(@RequestParam(defaultValue = "false") boolean includeInactive) {
+        return ResponseEntity.ok(userService.getAllUsers(includeInactive));
     }
 
     @Operation(summary = "Obtenir l'utilisateur courant", description = "Récupère les informations de l'utilisateur actuellement authentifié")

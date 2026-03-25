@@ -27,6 +27,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
         user.setRole(UserRole.ADMIN);
+        user.setStatus(fr.limoges.valadon.btssio.citoyensarmes.features.user.UserStatus.ACTIVE);
         user.setTournamentIds(new ArrayList<>());
         
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {

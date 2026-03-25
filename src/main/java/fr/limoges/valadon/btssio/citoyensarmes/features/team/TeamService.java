@@ -22,7 +22,7 @@ public class TeamService {
     public List<TeamDTO> listTeamsForTournament(String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournoi non trouvé avec l'id : " + tournamentId));
-        
+
         if (tournament.getTeamIds() == null || tournament.getTeamIds().isEmpty()) {
             return new ArrayList<>();
         }
@@ -40,7 +40,7 @@ public class TeamService {
         team.setName(request.getName());
         team.setImageUrl(request.getImageUrl());
         team.setPoints(0);
-        
+
         List<String> tournamentIds = new ArrayList<>();
         tournamentIds.add(tournamentId);
         team.setTournamentIds(tournamentIds);
@@ -135,8 +135,9 @@ public class TeamService {
         // mais Match est lié à Round qui est lié à Tournament.
         // Comme MatchService n'a pas RoundRepository ici, on pourrait l'ajouter
         // ou filtrer par rapport aux rounds du tournoi.
-        // Simplification ici : on compte tous les points du match où l'équipe participe.
-        
+        // Simplification ici : on compte tous les points du match où l'équipe
+        // participe.
+
         int totalPoints = 0;
         for (Match match : matches) {
             if (teamId.equals(match.getTeam1Id())) {

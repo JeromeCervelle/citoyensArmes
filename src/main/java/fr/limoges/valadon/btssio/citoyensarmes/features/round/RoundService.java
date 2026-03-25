@@ -37,7 +37,8 @@ public class RoundService {
         Round savedRound = roundRepository.save(round);
 
         // Mettre à jour le tournoi avec l'ID de la nouvelle manche
-        fr.limoges.valadon.btssio.citoyensarmes.features.tournament.Tournament tournament = tournamentRepository.findById(tournamentId).get();
+        fr.limoges.valadon.btssio.citoyensarmes.features.tournament.Tournament tournament = tournamentRepository
+                .findById(tournamentId).get();
         if (tournament.getRoundIds() == null) {
             tournament.setRoundIds(new ArrayList<>());
         }
@@ -50,11 +51,11 @@ public class RoundService {
     public RoundDTO getRound(String tournamentId, String roundId) {
         Round round = roundRepository.findById(roundId)
                 .orElseThrow(() -> new RuntimeException("Manche non trouvée avec l'id : " + roundId));
-        
+
         if (!round.getTournamentId().equals(tournamentId)) {
             throw new RuntimeException("Cette manche n'appartient pas au tournoi spécifié.");
         }
-        
+
         return mapToDTO(round);
     }
 
@@ -70,7 +71,7 @@ public class RoundService {
         match.setRoundId(roundId);
         match.setTeam1Point(0);
         match.setTeam2Point(0);
-        
+
         Match savedMatch = matchRepository.save(match);
 
         if (round.getMatchIds() == null) {

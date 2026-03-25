@@ -13,8 +13,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserDTO> getAllUsers() {
+    public List<UserDTO> getAllUsers(boolean includeInactive) {
         return userRepository.findAll().stream()
+                .filter(user -> includeInactive || user.getStatus() != UserStatus.INACTIVE)
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -69,10 +70,10 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("Utilisateur non trouvé");
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        user.setStatus(UserStatus.INACTIVE);
+        userRepository.save(user);
     }
 
     public UserDTO mapToDTO(User user) {
@@ -81,6 +82,7 @@ public class UserService {
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setRole(user.getRole());
+        dto.setStatus(user.getStatus());
         dto.setCreatedAt(user.getCreatedAt());
         dto.setUpdatedAt(user.getUpdatedAt());
         return dto;
