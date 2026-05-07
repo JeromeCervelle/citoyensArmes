@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,14 +26,14 @@ public class AuthController {
 
     @Operation(summary = "Se connecter", description = "Permet de s'authentifier et d'obtenir un jeton d'accès")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(authService.login(request, httpRequest));
     }
 
     @Operation(summary = "Jeton OAuth2", description = "Permet d'obtenir un jeton d'accès via le protocole OAuth2")
     @PostMapping("/oauth2/token")
-    public ResponseEntity<AuthResponse> oauth2Token(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> oauth2Token(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         // Selon le contrat d'API: email dans username
-        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.ok(authService.login(request, httpRequest));
     }
 }

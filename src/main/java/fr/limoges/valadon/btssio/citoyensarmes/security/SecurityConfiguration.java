@@ -19,8 +19,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import fr.limoges.valadon.btssio.citoyensarmes.features.user.User;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 

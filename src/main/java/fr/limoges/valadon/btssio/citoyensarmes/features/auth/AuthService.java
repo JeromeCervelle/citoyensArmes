@@ -7,9 +7,13 @@ import fr.limoges.valadon.btssio.citoyensarmes.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import fr.limoges.valadon.btssio.citoyensarmes.features.log.ConnectionLog;
+import fr.limoges.valadon.btssio.citoyensarmes.features.log.ConnectionLogRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Service
@@ -20,6 +24,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final ConnectionLogRepository connectionLogRepository;
 
     public AuthResponse register(RegisterRequest request) {
         var user = new User();
@@ -44,7 +49,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request, HttpServletRequest httpRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -53,6 +58,25 @@ public class AuthService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+
+        String ipAddress = null;
+        if (httpRequest != null) {
+            ipAddress = httpRequest.getHeader("X-Forwarded-For");
+            if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = httpRequest.getRemoteAddr();
+            } else {
+                ipAddress = ipAddress.split(",")[0].trim();
+            }
+        }
+
+        // Création et sauvegarde du log de connexion
+        var log = ConnectionLog.builder()
+                .userId(user.getId())
+                .connectionDateTime(LocalDateTime.now())
+                .ipAddress(ipAddress)
+                .build();
+        connectionLogRepository.save(log);
+
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .accessToken(jwtToken)
